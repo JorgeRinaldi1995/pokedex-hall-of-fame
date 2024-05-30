@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import './style.scss'
 
 function PokemonList() {
@@ -65,13 +66,15 @@ function PokemonList() {
             <ul className='pokemon-container'>
                 {pokemons.map((pokemon, index) => (
                     <li key={index} className='pokemon-card'>
-                        <div>
-                            <img src={pokemon.image} alt={pokemon.name} />
-                        </div>
-                        <div>
-                            <p>Name: {pokemon.name}</p>
-                            <p>Type: {pokemon.type}</p>
-                        </div>
+                        <Link to={`/pokemon/${pokemon.name}`}>
+                            <div>
+                                <img src={pokemon.image} alt={pokemon.name} />
+                            </div>
+                            <div>
+                                <p>Name: {pokemon.name}</p>
+                                <p>Type: {pokemon.type}</p>
+                            </div>
+                        </Link>
                     </li>
                 ))}
             </ul>
