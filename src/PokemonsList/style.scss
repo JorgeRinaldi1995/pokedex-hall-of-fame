@@ -1,0 +1,15 @@
+.pokemon-container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 1440px;
+    margin: 0 auto;
+    list-style: none;
+    gap: 20px;
+    .pokemon-card{
+        max-width: 140px;
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #f1f1ff;
+    }
+}
