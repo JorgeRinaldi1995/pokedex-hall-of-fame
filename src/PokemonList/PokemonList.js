@@ -2,11 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './style.scss';
+import PokemonType from '../PokemonType/PokemonType';
 
 function PokemonList() {
     const [pokemons, setPokemons] = useState([]);
+    const [displayedPokemons, setDisplayedPokemons] = useState([]);
     const [nextPage, setNextPage] = useState('https://pokeapi.co/api/v2/pokemon?offset=0&limit=1015');
     const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const fetchPokemons = async () => {
         setLoading(true);
@@ -23,7 +26,7 @@ function PokemonList() {
                 return {
                     name: detailsData.name,
                     type: detailsData.types.map(type => type.type.name),
-                    image: detailsData.sprites.front_default,
+                    image: detailsData.sprites.other['official-artwork'].front_default,
                 };
             }));
 
@@ -67,55 +70,29 @@ function PokemonList() {
         };
     }, [loading]); // Listen for scroll events
 
-    function getTypeColor(type) {
-        switch (type.toLowerCase()) {
-            case 'grass':
-                return 'grass';
-            case 'fire':
-                return 'fire';
-            case 'water':
-                return 'water';
-            case 'electric':
-                return 'electric';
-            case 'poison':
-                return 'poison';
-            case 'flying':
-                return 'flying';
-            case 'bug':
-                return 'bug';
-            case 'normal':
-                return 'normal';
-            case 'ground':
-                return 'ground';
-            case 'fairy':
-                return 'fairy';
-            case 'fighting':
-                return 'fighting';
-            case 'psychic':
-                return 'psychic';
-            case 'rock':
-                return 'rock';
-            case 'steel':
-                return 'steel';
-            case 'ice':
-                return 'ice';
-            case 'dragon':
-                return 'dragon';
-            case 'dark':
-                return 'dark';
-            case 'ghost':
-                return 'ghost';
-            // Add more cases for other types as needed
-            default:
-                return 'missigno'; // Default color
-        }
-    }
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
+
+    };
+
+    useEffect(() => {
+        const filteredPokemons = memorizedPokemons.filter(pokemon =>
+            pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setDisplayedPokemons(filteredPokemons);
+    }, [searchTerm, memorizedPokemons]);
 
     return (
         <div>
             <h1>Pokémon Feed</h1>
+            <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm}
+                onChange={handleSearch}
+            />
             <ul className='pokemon-container'>
-                {memorizedPokemons.map((pokemon, index) => (
+                {displayedPokemons.map((pokemon, index) => (
                     <li key={index} className='pokemon-card'>
                         <Link to={`/pokemon/${pokemon.name}`}>
                             <div className="pokemon-img">
@@ -123,16 +100,7 @@ function PokemonList() {
                             </div>
                             <div className="pokemon-body">
                                 <h3>{pokemon.name}</h3>
-                                <div className='pokemon-types'>
-                                    {pokemon.type && pokemon.type.length > 0 ? (
-                                        <>
-                                            <p className={getTypeColor(pokemon.type[0])}><span>{pokemon.type[0]}</span></p>
-                                            {pokemon.type[1] && <p className={getTypeColor(pokemon.type[1])}><span>{pokemon.type[1]}</span></p>}
-                                        </>
-                                    ) : (
-                                        <p style={{ color: getTypeColor('missigno') }}>missigno</p>
-                                    )}
-                                </div>
+                                <PokemonType types={pokemon.type} />
                             </div>
                         </Link>
                     </li>
